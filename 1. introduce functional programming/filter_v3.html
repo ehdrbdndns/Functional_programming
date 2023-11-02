@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title></title>
+    <script src="../utils/jquery.js"></script>
+    <script src="../utils/underscore.js"></script>
+    <style>
+      .user-list {
+        border: 1px solid red;
+        padding: 50px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="user-list"></div>
+  </body>
+  <script>
+    var users = [
+      { id: 1, name: 'HA', age: 25 },
+      { id: 2, name: 'PJ', age: 28 },
+      { id: 3, name: 'JE', age: 27 },
+    ];
+
+    var buttons = [];
+    $('.user-list').append(
+      _.map(users, function (user) {
+        return $('<button>')
+          .text(user.name)
+          .click(function () {
+            console.log(user.name);
+          });
+      })
+    );
+    console.log(buttons);
+    $('.user-list').append(buttons);
+  </script>
+</html>
