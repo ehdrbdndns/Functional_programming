@@ -144,11 +144,6 @@ console.log(a2);
 var add = new Function('a, b', 'return a + b;');
 console.log(add(1, 2));
 
-function L(str) {
-  var splitted = str.split('=>');
-  return new Function(splitted[0], 'return (' + splitted[1] + ');');
-}
-
 function map(arr, iteratee) {
   let new_array = [];
   for (let i = 0; i < arr.length; i++) {
@@ -157,7 +152,7 @@ function map(arr, iteratee) {
   return new_array;
 }
 
-console.log(L('n => n *10')(10));
+console.log(L('n => n * 10')(10));
 
 let test_datas = [1, 2, 3, 4, 5, 6];
 console.log(map(test_datas, L('n => n * 2')));
@@ -171,3 +166,88 @@ console.log(
 let testFunction = (a) => a * 2;
 
 console.log(map(test_datas, testFunction));
+
+function L(str) {
+  var splitted = str.split('=>');
+  return new Function(splitted[0], 'return (' + splitted[1] + ');');
+}
+
+// 메모리제이션 기법
+// L2 { 특정 str: new Function(아무개) } 형태로 저장해서 메모리에 담는 기법인데 신박하다.
+// 함수를 객체와 같이 사용한 것을 눈여겨 보자. 즉 함수도 객체임을 알자
+function L2(str) {
+  if (L2[str]) return L2[str];
+  var splitted = str.split('=>');
+  return (L2[str] = new Function(splitted[0], 'return (' + splitted[1] + ');'));
+}
+
+// L과 L2의 차이가 무엇인가를 눈여겨보자
+// L은 호출될 때마다 매번 새로운 익명함수를 생성한다.
+// L2는 호출될 때 해당 str에 대해 익명함수가 존재하면 새로운 익명함수를 생성하지 않고 기존에 있는 것을 사용한다.
+// 여기서 우리는 성능 차이를 확인할 수 있따. 대박
+
+// 아래 처럼 유명 함수를 사용하면 자기 자신을 참조하는데 간편하다.
+// 재귀함수와 같은 예시들이 존재한다.
+var f1 = function f() {
+  console.log(f);
+};
+
+f1();
+
+f1 = function () {
+  console.log(f1);
+};
+
+f1();
+var f2 = f1;
+f1 = 'hi~';
+
+f2();
+
+// 유명 함수는 내부 스코프에서만 접근이 가능하다.
+var h1 = 1;
+var hello = function h1() {
+  console.log(h1);
+};
+
+h1 = 2;
+hello();
+console.log(hello.name);
+console.log(hello.name === 'h1');
+
+// 즉시 실행 & 유명함수 & 재귀함수를 사용한 버전
+function flatten(arr) {
+  return (function f(arr, new_array) {
+    arr.forEach((element) => {
+      Array.isArray(element) ? f(element, new_array) : new_array.push(element);
+    });
+
+    return new_array;
+  })(arr, []);
+}
+
+console.log(flatten([1, 2, [3, 4, [5]]]));
+
+// 단순히 재귀함수만 사용한 버전
+function flatten2(arr, new_array) {
+  arr.forEach((v) => {
+    Array.isArray(v) ? flatten2(v, new_array) : new_array.push(v);
+  });
+
+  return new_array;
+}
+
+console.log(flatten2([1, 2, [3, 4, [5]]], []));
+
+function flatten3(arr, new_array) {
+  if (!new_array) return flatten3(arr, []);
+  arr.forEach((v) => {
+    Array.isArray(v) ? flatten3(v, new_array) : new_array.push(v);
+  });
+
+  return new_array;
+}
+
+console.log(flatten3([1, 2, [3, 4, [5]]]));
+// 위 두 버전을 비교했을 때 단순히 재귀함수만 사용하는 버전은 사용자가 항상 두번 째 인자 값에
+// 빈 배열을 넘겨주거나 if문을 사용해 빈 배열이 넘어왔는지 체크해야 한다.
