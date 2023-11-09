@@ -251,3 +251,40 @@ function flatten3(arr, new_array) {
 console.log(flatten3([1, 2, [3, 4, [5]]]));
 // 위 두 버전을 비교했을 때 단순히 재귀함수만 사용하는 버전은 사용자가 항상 두번 째 인자 값에
 // 빈 배열을 넘겨주거나 if문을 사용해 빈 배열이 넘어왔는지 체크해야 한다.
+
+// 함수 실행과 인자 그리고 점 다시 보기
+function test(a, b, c) {
+  console.log('a b c: ', a, b, c);
+  // console.log('this: ', this);
+  console.log('arguments: ', arguments);
+}
+
+test(10);
+
+test(10, undefined);
+
+test(10, 20, 30);
+
+function test2(a, b) {
+  b = 10;
+  console.log(arguments);
+}
+
+test2(1);
+
+test2(1, 2);
+
+var obj1 = {
+  0: 1,
+  1: 2,
+};
+console.log(obj1);
+
+var a = obj1[0];
+var b = obj1[1];
+b = 10;
+console.log(obj1);
+console.log(obj1[1]);
+console.log(b);
+
+// 함수의 인자는 변동되고 변수는 유지된다~?!!?
